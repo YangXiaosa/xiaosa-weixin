@@ -1,4 +1,4 @@
-package com.xiaosa.wx.serviceImp;
+package com.xiaosa.wx.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,17 +7,25 @@ import com.xiaosa.wx.service.WxService;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class WxServiceImp implements WxService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(WxServiceImp.class);
+
+    @Value("${token}")
+    private String token;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -58,6 +66,21 @@ public class WxServiceImp implements WxService {
             }
         }
         return getAccessToken();
+    }
+
+
+    public boolean checkSignature(String signature, String timestmp, String nonce) {
+        List<String> params = Arrays.asList(timestmp,nonce,token);
+        Collections.sort(params);
+        StringBuffer sb = new StringBuffer();
+        for (String str : params) {
+            sb.append(str);
+        }
+        String sha1Str = DigestUtils.sha1Hex(sb.toString());
+        if (sha1Str.equals(signature)) {
+            return true;
+        }
+        return false;
     }
 
 }

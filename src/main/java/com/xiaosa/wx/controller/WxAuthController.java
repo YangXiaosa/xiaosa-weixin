@@ -20,9 +20,6 @@ import java.util.List;
 @RestController
 public class WxAuthController {
 
-    @Value("${token}")
-    private String token;
-
     @Autowired
     private WxService wxService;
 
@@ -35,21 +32,29 @@ public class WxAuthController {
         if (signature == null || timestamp == null || nonce == null || echostr == null) {
             return "非法请求";
         }
-        if (!checkSignature(signature, timestamp, nonce, token)) {
+        if (!wxService.checkSignature(signature, timestamp, nonce)) {
             return "非法请求";
         }
         return echostr;
     }
 
+    @GetMapping("/getAccessToken")
+    public String getAccessToken() {
+        return wxService.getAccessToken();
+    }
+
     @ResponseBody
     @PostMapping(produces = "application/xml; charset=UTF-8")
-    public String post(HttpServletRequest request,@RequestBody String requestBody, @RequestParam("signature") String signature,
+    public String post(@RequestBody String requestBody, @RequestParam("signature") String signature,
                        @RequestParam(name = "encrypt_type", required = false) String encType,
                        @RequestParam(name = "msg_signature", required = false) String msgSignature,
                        @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce) throws Exception {
-        if (!checkSignature(signature, timestamp, nonce, token)) {
+        if (!wxService.checkSignature(signature, timestamp, nonce)) {
             throw new IllegalArgumentException("非法请求，可能属于伪造的请求！");
         }
+
+
+
         System.out.println(requestBody);
         String result = "<![CDATA[爱你 ]]>";
         String toUser = null;
@@ -67,24 +72,7 @@ public class WxAuthController {
     }
 
 
-    private boolean checkSignature(String signature, String timestmp, String nonce, String token) {
-        List<String> params = Arrays.asList(timestmp,nonce,token);
-        Collections.sort(params);
-        StringBuffer sb = new StringBuffer();
-        for (String str : params) {
-            sb.append(str);
-        }
-        String sha1Str = DigestUtils.sha1Hex(sb.toString());
-        if (sha1Str.equals(signature)) {
-            return true;
-        }
-        return false;
-    }
 
-    @GetMapping("/getAccessToken")
-    public String getAccessToken() {
-        return wxService.getAccessToken();
-    }
 
 }
 
