@@ -46,24 +46,22 @@ public class WxAuthController {
     @ResponseBody
     @PostMapping(produces = "application/xml; charset=UTF-8")
     public String post(@RequestBody String requestBody, @RequestParam("signature") String signature,
-                       @RequestParam(name = "encrypt_type", required = false) String encType,
-                       @RequestParam(name = "msg_signature", required = false) String msgSignature,
                        @RequestParam("timestamp") String timestamp, @RequestParam("nonce") String nonce) throws Exception {
         if (!wxService.checkSignature(signature, timestamp, nonce)) {
             throw new IllegalArgumentException("非法请求，可能属于伪造的请求！");
         }
 
-
+       String out = wxService.handleMsg(requestBody);
 
         System.out.println(requestBody);
-        String result = "<![CDATA[爱你 ]]>";
+        String result = "<![CDATA[爱你]]>";
         String toUser = null;
         try {
+            toUser  = requestBody.subSequence(requestBody.indexOf("<FromUserName>"),requestBody.indexOf("</FromUserName>")).toString().replace("<FromUserName>","");
             String content = requestBody.subSequence(requestBody.indexOf("<Content>"),requestBody.indexOf("</Content>")).toString().replace("<Content>","");
             if (content.equals("<![CDATA[老公]]>")) {
-                result = "<![CDATA[宝宝，I LOVE YOU ]]>";
+                result = "<![CDATA[宝宝，I LOVE YOU]]>";
             }
-            toUser  = requestBody.subSequence(requestBody.indexOf("<FromUserName>"),requestBody.indexOf("</FromUserName>")).toString().replace("<FromUserName>","");
         } catch (Exception e) {
             result = "<![CDATA[回复老公，得惊喜]]>";
         }
