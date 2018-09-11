@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequestMapping("/wx")
 public class WxAuthController {
 
     @Autowired
@@ -54,19 +55,19 @@ public class WxAuthController {
        String out = wxService.handleMsg(requestBody);
 
         System.out.println(requestBody);
-        String result = "<![CDATA[爱你]]>";
+        String result = "<![CDATA[服务正在准备]]>";
         String toUser = null;
         try {
             toUser  = requestBody.subSequence(requestBody.indexOf("<FromUserName>"),requestBody.indexOf("</FromUserName>")).toString().replace("<FromUserName>","");
             String content = requestBody.subSequence(requestBody.indexOf("<Content>"),requestBody.indexOf("</Content>")).toString().replace("<Content>","");
-            if (content.equals("<![CDATA[老公]]>")) {
-                result = "<![CDATA[宝宝，I LOVE YOU]]>";
+            if (content.equals("<![CDATA[购买]]>")) {
+                result = "<![CDATA[客官别急，服务还需几天准备]]>";
             }
         } catch (Exception e) {
-            result = "<![CDATA[回复老公，得惊喜]]>";
+            result = "<![CDATA[服务正在准备]]>";
         }
 
-        return "<xml> <ToUserName>"+toUser+"</ToUserName> <FromUserName><![CDATA[gh_2a542f784315]]></FromUserName> <CreateTime>12345678</CreateTime> <MsgType><![CDATA[text]]></MsgType> <Content>"+result+"</Content> </xml>";
+        return "<xml> <ToUserName>"+toUser+"</ToUserName> <FromUserName><![CDATA[gh_6801fae6a84b]]></FromUserName> <CreateTime>12345678</CreateTime> <MsgType><![CDATA[text]]></MsgType> <Content>"+result+"</Content> </xml>";
     }
 
 

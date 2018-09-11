@@ -50,7 +50,7 @@ public class WxServiceImp implements WxService {
             tryCount ++;
             OkHttpClient httpClient = new OkHttpClient();
             try {
-                Request request = new Request.Builder().url(WX_API_URL + "/cgi-bin/token?grant_type=client_credential&appid=wxb427f89f4e349c42&secret=8bf3f3654affe5b6efcab5cfed09cfab").build();
+                Request request = new Request.Builder().url(WX_API_URL + "/cgi-bin/token?grant_type=client_credential&appid=wx7683499d0fa9bc05&secret=c25a2ff034ae97c11bd5712a8f54bcdb").build();
                 Response response = httpClient.newCall(request).execute();
                 String resultJson = response.body().string();
                 JsonNode node = objectMapper.readTree(resultJson);
